@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('payment_method');
             $table->integer('transaction_id');
             $table->string('status');
-            $table->string('amount');
+            $table->float('amount');
             $table->timestamps();
         });
     }

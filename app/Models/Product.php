@@ -15,4 +15,19 @@ class Product extends Model
         'price',
         'stock',
     ];
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class);
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }
