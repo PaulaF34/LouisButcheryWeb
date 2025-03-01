@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use HasFactory, HasApiTokens, Notifiable;
+
     protected $fillable = [
         'name',
         'address',
@@ -41,7 +45,7 @@ class User extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function chats ()
+    public function chats()
     {
         return $this->hasMany(Chat::class);
     }
@@ -56,7 +60,7 @@ class User extends Model
         return $this->role === 'user';
     }
 
-    public function setpasswordAttribute($password)
+    public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = bcrypt($password);
     }
