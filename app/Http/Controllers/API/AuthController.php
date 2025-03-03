@@ -6,61 +6,51 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller{
-    public function register(Request $request)
-    {
-        $user = new User([
-            'name' => $request->name,
-            'address' => $request->address,
-            'phone' => $request->phone,
-            'email' => $request->email,
-            'password' => $request->password, // Model will hash it
-            'role' => 'customer',
-        ]);
-        $user->save();
-
-        $token = $user->createToken('authToken')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully created user!',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
-
-
-public function login(Request $request)
+public function register(RegisterRequest $request)
 {
-    // Validate request data
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+    // Get the validated data from the request
+    $validatedData = $request->validated();
 
-    // Find user by email
-    $user = User::where('email', $request->email)->first();
+    // Create the user with the validated data (password will be hashed automatically by the mutator)
+    $user = User::create($validatedData);
 
-    // Check if user exists and verify password using Hash::check()
-    if ($user && Hash::check($request->password, $user->password)) {
-        $token = $user->createToken('authToken')->plainTextToken;
+    // Generate an authentication token for the user
+    $token = $user->createToken('authToken')->plainTextToken;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully logged in!',
-            'user' => $user,
-            'token' => $token,
-        ], 200);
-    } else {
-        return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized',
-        ], 401);
-    }
+    // Return response with user details and token
+    return response()->json([
+        'success' => true,
+        'message' => 'Successfully created user!',
+        'user' => $user,
+        'token' => $token,
+    ], 201);
 }
 
 
+    public function login(LoginRequest $request)
+    {
+        // Attempt to authenticate with the given credentials
+        if (!auth()->attempt($request->only('email', 'password'), $request->remember)) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
+        }
+
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Generate a token (if using Laravel Sanctum or Passport)
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Return user data with token
+        return response()->json([
+            'message' => 'Login successful!',
+            'user' => $user, // Includes all fields from the `users` table
+            'token' => $token,
+        ]);
+    }
 
     public function logout(Request $request)
 {
