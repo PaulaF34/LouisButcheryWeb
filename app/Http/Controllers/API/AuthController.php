@@ -5,43 +5,45 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller{
-  public function register(Request $request)
-  {
-    $user = new User([
-        'name' => $request->name,
-        'address' => $request->address,
-        'phone' => $request->phone,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'role' => 'customer',
-    ]);
-    $user->save();
+    public function register(Request $request)
+    {
+        $user = new User([
+            'name' => $request->name,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'password' => $request->password, // Model will hash it
+            'role' => 'customer',
+        ]);
+        $user->save();
 
-    $token = $user->createToken('authToken')->plainTextToken;
+        $token = $user->createToken('authToken')->plainTextToken;
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Successfully created user!',
-        'user' => $user,
-        'token' => $token,
-    ], 201);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully created user!',
+            'user' => $user,
+            'token' => $token,
+        ], 201);
+    }
+
 
 public function login(Request $request)
 {
-    // Validate incoming request
+    // Validate request data
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
     ]);
 
-    // Attempt to find user and validate credentials
+    // Find user by email
     $user = User::where('email', $request->email)->first();
 
-    // If user exists and password matches
-    if ($user && password_verify($request->password, $user->password)) {
+    // Check if user exists and verify password using Hash::check()
+    if ($user && Hash::check($request->password, $user->password)) {
         $token = $user->createToken('authToken')->plainTextToken;
 
         return response()->json([
@@ -57,6 +59,7 @@ public function login(Request $request)
         ], 401);
     }
 }
+
 
 
     public function logout(Request $request)
