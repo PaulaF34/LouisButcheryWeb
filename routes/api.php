@@ -28,5 +28,6 @@ Route::prefix('auth')->group(function () {
 
 // Protect routes under authentication
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/list', [UserListController::class, 'index']);
+    Route::get('/list', [UserListController::class, 'index'])->middleware('admin');
+
 });

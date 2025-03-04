@@ -20,6 +20,30 @@ class User extends Authenticatable
         'role',
     ];
 
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    public function updateUser(array $data)
+{
+    // If password is provided, hash it; otherwise, remove it from the update data
+    if (!empty($data['password'])) {
+        $data['password'] = bcrypt($data['password']);
+    } else {
+        unset($data['password']); // Prevent overwriting with null
+    }
+
+    // Update the user with the provided data
+    return $this->update($data);
+}
+
+
+    // Relationships
     public function orders()
     {
         return $this->hasMany(Order::class);
@@ -50,16 +74,18 @@ class User extends Authenticatable
         return $this->hasMany(Chat::class);
     }
 
-    public function isAdmin()
+    // Role-based Accessors (Better alternative to isAdmin() & isUser())
+    public function getIsAdminAttribute(): bool
     {
         return $this->role === 'admin';
     }
 
-    public function isUser()
+    public function getIsCustomerAttribute(): bool
     {
-        return $this->role === 'user';
+        return $this->role === 'customer'; // Fixed from 'user'
     }
 
+    // Auto-hash password when setting
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = bcrypt($password);

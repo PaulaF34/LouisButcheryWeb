@@ -7,9 +7,10 @@ use Illuminate\Foundation\Http\FormRequest;
 class UserListRequest extends FormRequest
 {
     public function authorize()
-    {
-        return true; // Allow everyone or use authorization logic
-    }
+{
+    return auth()->check() && auth()->user()->role === 'admin';
+}
+
 
     public function rules()
     {

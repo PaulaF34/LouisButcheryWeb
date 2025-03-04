@@ -10,12 +10,12 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller{
-public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request)
 {
     // Get the validated data from the request
     $validatedData = $request->validated();
 
-    // Create the user with the validated data (password will be hashed automatically by the mutator)
+    // Create the user with the validated data (password will be hashed by the model)
     $user = User::create($validatedData);
 
     // Generate an authentication token for the user
@@ -29,7 +29,6 @@ public function register(RegisterRequest $request)
         'token' => $token,
     ], 201);
 }
-
 
     public function login(LoginRequest $request)
     {
