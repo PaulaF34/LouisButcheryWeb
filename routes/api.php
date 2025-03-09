@@ -4,12 +4,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserListController;
+use App\Http\Controllers\API\PasswordResetController;
+
+
+
 
 /*
 |---------------------------------------------------------------------------
 | API Routes
-|--------------------------------------------------------------------------
-|
+|---------------------------------------------------------------------------
 | Register your API routes here. These routes will be loaded by the
 | RouteServiceProvider and all of them will be assigned to the "api" middleware group.
 |
@@ -20,6 +23,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Authentication routes
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -29,5 +33,8 @@ Route::prefix('auth')->group(function () {
 // Protect routes under authentication
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/list', [UserListController::class, 'index'])->middleware('admin');
-
 });
+
+
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);

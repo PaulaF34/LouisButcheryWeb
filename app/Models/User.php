@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -20,30 +21,15 @@ class User extends Authenticatable
         'role',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token'
-    ];
+    // Other relationships...
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function updateUser(array $data)
-{
-    // If password is provided, hash it; otherwise, remove it from the update data
-    if (!empty($data['password'])) {
-        $data['password'] = bcrypt($data['password']);
-    } else {
-        unset($data['password']); // Prevent overwriting with null
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token)); // Laravel will automatically send the email
     }
 
-    // Update the user with the provided data
-    return $this->update($data);
-}
+    // Other helper methods for roles...
 
-
-    // Relationships
     public function orders()
     {
         return $this->hasMany(Order::class);
@@ -74,18 +60,16 @@ class User extends Authenticatable
         return $this->hasMany(Chat::class);
     }
 
-    // Role-based Accessors (Better alternative to isAdmin() & isUser())
-    public function getIsAdminAttribute(): bool
+    public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
-    public function getIsCustomerAttribute(): bool
+    public function isUser()
     {
-        return $this->role === 'customer'; // Fixed from 'user'
+        return $this->role === 'user';
     }
 
-    // Auto-hash password when setting
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = bcrypt($password);

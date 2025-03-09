@@ -9,6 +9,8 @@ use App\Models\Payment;
 use App\Models\Notification;
 use App\Models\Review;
 use App\Models\Chat;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,6 +21,7 @@ use App\Models\Chat;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 
 Route::get('/', function () {
 
@@ -162,3 +165,7 @@ Route::get('/', function () {
 
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
