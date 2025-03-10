@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserListController;
 use App\Http\Controllers\API\PasswordResetController;
+use App\Http\Controllers\API\ProductController;
 
 
 
@@ -38,3 +39,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
+
+Route::prefix('products')->controller(ProductController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{id}', 'show');
+    Route::post('/new', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+    Route::get('/search/{name}', 'search');
+}
+);
