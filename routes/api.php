@@ -55,5 +55,8 @@ Route::prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']); // Get all orders
     Route::get('/{id}', [OrderController::class, 'show']); // Get order details
     Route::put('/update/{id}', [OrderController::class, 'update']); // Update order status
+    Route::put('/update-quantity/{id}', [OrderController::class, 'updateQuantity']); // Update order quantity
+    Route::delete('/remove-item/{id}', [OrderController::class, 'removeItem']); // Remove item from order
     Route::delete('/cancel/{id}', [OrderController::class, 'destroy']); // Cancel an order
 });
+
