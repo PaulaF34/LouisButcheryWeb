@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserListController;
 use App\Http\Controllers\API\PasswordResetController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\OrderController;
 
 
 
@@ -47,5 +48,12 @@ Route::prefix('products')->controller(ProductController::class)->group(function 
     Route::put('/update/{id}', 'update');
     Route::delete('/delete/{id}', 'destroy');
     Route::get('/search/{name}', 'search');
-}
-);
+});
+
+Route::prefix('orders')->group(function () {
+    Route::post('/new', [OrderController::class, 'store']); // Create an order
+    Route::get('/', [OrderController::class, 'index']); // Get all orders
+    Route::get('/{id}', [OrderController::class, 'show']); // Get order details
+    Route::put('/update/{id}', [OrderController::class, 'update']); // Update order status
+    Route::delete('/cancel/{id}', [OrderController::class, 'destroy']); // Cancel an order
+});

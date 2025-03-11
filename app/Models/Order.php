@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'date',
         'user_id',
@@ -14,8 +15,8 @@ class Order extends Model
         'quantity',
         'price',
         'amount',
-        'status',
-    ];
+        'status'];
+    protected $casts = ['date' => 'date'];
 
     public function user()
     {
