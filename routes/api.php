@@ -44,10 +44,16 @@ Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']
 Route::prefix('products')->controller(ProductController::class)->group(function () {
     Route::get('/', 'index');
     Route::get('/{id}', 'show');
-    Route::post('/new', 'store');
-    Route::put('/update/{id}', 'update');
-    Route::delete('/delete/{id}', 'destroy');
     Route::get('/search/{name}', 'search');
+
+    // Apply authentication middleware to the store route (only accessible by admin)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/new', 'store');  // Only authenticated users can create a new product
+        Route::put('/update/{id}', 'update');  // Only authenticated users can update products
+        Route::delete('/delete/{id}', 'destroy');  // Only authenticated users can delete products
+        Route::put('/update-stock/{id}', 'updateStock');  // Only authenticated users can update product stock
+    });
+
 });
 
 Route::prefix('orders')->group(function () {
