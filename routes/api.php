@@ -36,8 +36,6 @@ Route::prefix('auth')->group(function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/list', [UserListController::class, 'index'])->middleware('admin');
 });
-
-
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
@@ -56,13 +54,26 @@ Route::prefix('products')->controller(ProductController::class)->group(function 
 
 });
 
-Route::prefix('orders')->group(function () {
-    Route::post('/new', [OrderController::class, 'store']); // Create an order
-    Route::get('/', [OrderController::class, 'index']); // Get all orders
-    Route::get('/{id}', [OrderController::class, 'show']); // Get order details
-    Route::put('/update/{id}', [OrderController::class, 'update']); // Update order status
-    Route::put('/update-quantity/{id}', [OrderController::class, 'updateQuantity']); // Update order quantity
-    Route::delete('/remove-item/{id}', [OrderController::class, 'removeItem']); // Remove item from order
-    Route::delete('/cancel/{id}', [OrderController::class, 'destroy']); // Cancel an order
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    // Cart APIs
+    Route::prefix('cart')->group(function () {
+        Route::post('/add', [OrderController::class, 'addToCart']); // Add item to cart
+        Route::get('/', [OrderController::class, 'getCart']); // Get cart items
+        Route::delete('/remove/{id}', [OrderController::class, 'removeFromCart']); // Remove item from cart
+        Route::post('/clear', [OrderController::class, 'clearCart']); // Clear cart
+    });
+
+    // Order APIs
+    Route::prefix('orders')->group(function () {
+        Route::post('/checkout', [OrderController::class, 'checkout']); // Create an order from cart
+        Route::get('/', [OrderController::class, 'index']); // Get all orders
+        Route::get('/{id}', [OrderController::class, 'show']); // Get order details
+        Route::put('/update/{id}', [OrderController::class, 'update']); // Update order status
+        Route::delete('/cancel/{id}', [OrderController::class, 'destroy']); // Cancel an order
+        Route::put('/quantity/{id}', [OrderController::class, 'updateQuantity']); // Update quantity of an item in an order
+        Route::delete('/item/{order_id}/{product_id}', [OrderController::class, 'removeItemFromOrder']); // Remove an item from the order
+    });
 });
+
 
