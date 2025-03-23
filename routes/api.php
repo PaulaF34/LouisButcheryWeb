@@ -8,6 +8,8 @@ use App\Http\Controllers\API\PasswordResetController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ReviewController;
 
 
 
@@ -84,3 +86,18 @@ Route::prefix('payment')->middleware('auth:sanctum')->group(function () {
     Route::post('/confirm', [PaymentController::class, 'confirmPayment']);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Route to send a notification, only accessible by admin
+    Route::post('/notifications/send', [NotificationController::class, 'sendNotification']);
+
+    // Route to get notifications
+    // A user can only see their own notifications, or all notifications if they are an admin
+    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+
+    // Route to delete a notification, ensure the user has permission
+    Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
+});
+
+Route::middleware('auth:sanctum')->post('/review/submit', [ReviewController::class, 'submitReview']);
+Route::get('/review/{productId}', [ReviewController::class, 'getReviews']);
