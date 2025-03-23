@@ -10,7 +10,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ReviewController;
-
+use App\Http\Controllers\Api\ChatController;
 
 
 /*
@@ -101,3 +101,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->post('/review/submit', [ReviewController::class, 'submitReview']);
 Route::get('/review/{productId}', [ReviewController::class, 'getReviews']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Start Chat Route (only for authenticated users)
+    Route::post('/chat/start', [ChatController::class, 'startChat']);
+
+    // Get Chat History Route (only for authenticated users)
+    Route::get('/chat/{chatId}', [ChatController::class, 'getChatHistory']);
+});
