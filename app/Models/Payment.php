@@ -11,9 +11,12 @@ class Payment extends Model
         'order_id',
         'user_id',
         'payment_method',
-        'transaction_id',
         'status',
         'amount',
+    ];
+
+    protected $casts = [
+        'transaction_id' => 'string',
     ];
 
     public function order()

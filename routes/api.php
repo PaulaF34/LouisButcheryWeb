@@ -7,7 +7,7 @@ use App\Http\Controllers\API\UserListController;
 use App\Http\Controllers\API\PasswordResetController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
-
+use App\Http\Controllers\API\PaymentController;
 
 
 
@@ -76,4 +76,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 });
 
+Route::prefix('payment')->middleware('auth:sanctum')->group(function () {
+    // Route for initiating payment
+    Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
+
+    // Route for confirming payment
+    Route::post('/confirm', [PaymentController::class, 'confirmPayment']);
+});
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->string('payment_method');
-            $table->integer('transaction_id');
+            $table->integer('transaction_id')->nullable()->unique();
             $table->string('status');
             $table->float('amount');
             $table->timestamps();
