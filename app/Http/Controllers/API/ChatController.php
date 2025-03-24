@@ -43,4 +43,24 @@ class ChatController extends Controller
 
     return response()->json($messages, 200);
 }
+
+// 🚀 Admin sends a response
+public function adminSendMessage($chatId, Request $request)
+{
+    $request->validate([
+        'message' => 'required|string',
+    ]);
+
+    $message = Chat::create([
+        'id' => $chatId,
+        'user_id' => Auth::user()->id,
+        'message' => $request->message,
+        'sender' => 'admin', // Identifying admin
+    ]);
+
+    return response()->json([
+        'message' => 'Admin message sent successfully.',
+        'data' => $message
+    ], 201);
+}
 }

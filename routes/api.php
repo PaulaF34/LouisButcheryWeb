@@ -108,4 +108,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Get Chat History Route (only for authenticated users)
     Route::get('/chat/{chatId}', [ChatController::class, 'getChatHistory']);
+
+    // Admin Routes
+    Route::post('/admin/chat/{chatId}/send', [ChatController::class, 'adminSendMessage']); // Admin Respond
+
 });
